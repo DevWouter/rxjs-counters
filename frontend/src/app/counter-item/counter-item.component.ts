@@ -26,12 +26,14 @@ export class CounterItemComponent {
 
   @Output() deleted = new EventEmitter<void>();
 
-  value$ = combineLatest([this.reload$, this.timer$]).pipe(
+  value = 0;
+
+  sub = combineLatest([this.reload$, this.timer$]).pipe(
     switchMap(()=>this._counter),     // Get the counter name
     filter(x=> x !== undefined),      // Don't emit unless name is set
     switchMap(x => this.api.get(x!)), // Then get value from API
     map(x => x.value)                 // And return only the value
-  );
+  ).subscribe(x => this.value = x);
 
   deleteMe() {
     firstValueFrom(this.api.delete(this.counter!));
@@ -39,14 +41,12 @@ export class CounterItemComponent {
   }
 
   async increment() {
-    var v = await firstValueFrom(this.value$);
-    await firstValueFrom(this.api.update(this.counter!, v + 1));
+    await firstValueFrom(this.api.update(this.counter!, this.value + 1));
     this.reload$.next(null);
   }
   
   async decrement() {
-    var v = await firstValueFrom(this.value$);
-    await firstValueFrom(this.api.update(this.counter!, v - 1));
+    await firstValueFrom(this.api.update(this.counter!, this.value - 1));
     this.reload$.next(null);
   }
 }
