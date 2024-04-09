@@ -1,5 +1,5 @@
 import { HttpClientModule } from '@angular/common/http';
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CounterApiService } from '../counter-api.service';
 import { firstValueFrom } from 'rxjs';
 
@@ -16,8 +16,10 @@ export class CounterItemComponent {
   ) { }
 
   @Input() counter?: string;
+  @Output() deleted = new EventEmitter<void>();
 
   deleteMe() {
     firstValueFrom(this.api.delete(this.counter!));
+    this.deleted.emit(); // Emit that we have been deleted
   }
 }

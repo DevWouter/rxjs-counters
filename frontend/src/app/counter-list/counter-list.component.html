@@ -1,5 +1,5 @@
 <h2>Counter List</h2>
-<app-counter-item *ngFor="let counter of counters$|async" [counter]="counter"></app-counter-item>
+<app-counter-item *ngFor="let counter of counters$|async" [counter]="counter" (deleted)="reload()"></app-counter-item>
 
 <form (ngSubmit)="addCounter()" [formGroup]="createForm">
     <label for="name">Counter Name</label>
