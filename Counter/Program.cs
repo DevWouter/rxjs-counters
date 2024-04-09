@@ -1,4 +1,5 @@
 using Counter;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,14 +21,14 @@ app.UseHttpsRedirection();
 
 var trackers = new List<Tracker>();
 
-app.MapGet("/counters", () => trackers.Select(x => x.Name)).WithOpenApi();
-app.MapPost("/counters", (CreateTrackerRequest body) =>
+app.MapGet("/api/counters", IEnumerable<string> () => trackers.Select(x => x.Name)).WithOpenApi();
+app.MapPost("/api/counters", void (CreateTrackerRequest body) =>
 {
     if (trackers.Any(x => x.Name == body.Name)) throw new Exception("Counter already exists");
     trackers.Add(new Tracker() { Name = body.Name });
 }).WithOpenApi();
-app.MapGet("/counters/{name:required}", (string name) => trackers.Single(x => x.Name == name)).WithOpenApi();
-app.MapDelete("/counters/{name:required}", (string name) => trackers.RemoveAll(x => x.Name == name)).WithOpenApi();
-app.MapPut("/counters/{name:required}", (string name, int value) => trackers.Single(x => x.Name == name).Value = value).WithOpenApi();
+app.MapGet("/api/counters/{name:required}", Tracker (string name) => trackers.Single(x => x.Name == name)).WithOpenApi();
+app.MapDelete("/api/counters/{name:required}", int (string name) => trackers.RemoveAll(x => x.Name == name)).WithOpenApi();
+app.MapPut("/api/counters/{name:required}", void (string name, [FromBody] UpdateTrackerRequest body) => trackers.Single(x => x.Name == name).Value = body.Value).WithOpenApi();
 
 app.Run();
