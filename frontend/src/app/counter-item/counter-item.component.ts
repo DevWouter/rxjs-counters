@@ -1,7 +1,7 @@
 import { HttpClientModule } from '@angular/common/http';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CounterApiService } from '../counter-api.service';
-import { firstValueFrom, map } from 'rxjs';
+import { BehaviorSubject, filter, firstValueFrom, map, switchMap } from 'rxjs';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -16,13 +16,17 @@ export class CounterItemComponent {
     private readonly api: CounterApiService,
   ) { }
 
+  // Convert the input value from a string to a BehaviorSubject
+  private _counter = new BehaviorSubject<string | undefined>(undefined);
+  @Input() set counter(value: string | undefined) { this._counter.next(value); }
+  get counter() { return this._counter.value; }
 
-  @Input() counter?: string;
   @Output() deleted = new EventEmitter<void>();
 
-  /** ERROR: This results in `/api/countes/undefined` */
-  value$ = this.api.get(this.counter!).pipe(
-    map(x => x.value)
+  value$ = this._counter.pipe(
+    filter(x=> x !== undefined),      // Don't emit unless name is set
+    switchMap(x => this.api.get(x!)), // Then get value from API
+    map(x => x.value)                 // And return only the value
   );
 
   deleteMe() {
