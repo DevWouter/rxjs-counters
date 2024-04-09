@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { HttpClientModule } from '@angular/common/http';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-counter-item',
@@ -8,5 +9,6 @@ import { Component } from '@angular/core';
   styleUrl: './counter-item.component.css'
 })
 export class CounterItemComponent {
+  @Input() counter?: string;
 
 }

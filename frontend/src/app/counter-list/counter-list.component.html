@@ -1,1 +1,8 @@
-<p>counter-list works!</p>
+<h2>Counter List</h2>
+<app-counter-item *ngFor="let counter of counters$|async" [counter]="counter"></app-counter-item>
+
+<form (ngSubmit)="addCounter()" [formGroup]="createForm">
+    <label for="name">Counter Name</label>
+    <input type="text" formControlName="name" placeholder="Counter Name">
+    <button type="submit">Add Counter</button>
+</form>

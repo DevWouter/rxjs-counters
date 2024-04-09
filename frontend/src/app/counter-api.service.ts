@@ -8,7 +8,7 @@ export interface Counter {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CounterApiService {
 
