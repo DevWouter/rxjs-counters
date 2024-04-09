@@ -1,5 +1,8 @@
 <div class="counter">
     <div class="name">Counter: {{counter}}</div>
-    <div class="number">{{value$|async}}</div>
+    <div class="number">{{value$|async}}
+        <button (click)="increment()">+</button>
+        <button (click)="decrement()">-</button>
+    </div>
     <button (click)="deleteMe()">delete</button>
 </div>

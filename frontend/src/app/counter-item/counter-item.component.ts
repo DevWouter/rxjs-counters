@@ -33,4 +33,14 @@ export class CounterItemComponent {
     firstValueFrom(this.api.delete(this.counter!));
     this.deleted.emit(); // Emit that we have been deleted
   }
+
+  async increment() {
+    var v = await firstValueFrom(this.value$);
+    await firstValueFrom(this.api.update(this.counter!, v + 1));
+  }
+  
+  async decrement() {
+    var v = await firstValueFrom(this.value$);
+    await firstValueFrom(this.api.update(this.counter!, v - 1));
+  }
 }
