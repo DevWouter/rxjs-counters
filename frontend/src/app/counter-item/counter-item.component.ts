@@ -16,6 +16,8 @@ export class CounterItemComponent {
     private readonly api: CounterApiService,
   ) { }
 
+  private reload$ = new BehaviorSubject(null);
+
   // Convert the input value from a string to a BehaviorSubject
   private _counter = new BehaviorSubject<string | undefined>(undefined);
   @Input() set counter(value: string | undefined) { this._counter.next(value); }
@@ -23,7 +25,8 @@ export class CounterItemComponent {
 
   @Output() deleted = new EventEmitter<void>();
 
-  value$ = this._counter.pipe(
+  value$ = this.reload$.pipe(
+    switchMap(()=>this._counter),     // Get the counter name
     filter(x=> x !== undefined),      // Don't emit unless name is set
     switchMap(x => this.api.get(x!)), // Then get value from API
     map(x => x.value)                 // And return only the value
@@ -37,10 +40,12 @@ export class CounterItemComponent {
   async increment() {
     var v = await firstValueFrom(this.value$);
     await firstValueFrom(this.api.update(this.counter!, v + 1));
+    this.reload$.next(null);
   }
   
   async decrement() {
     var v = await firstValueFrom(this.value$);
     await firstValueFrom(this.api.update(this.counter!, v - 1));
+    this.reload$.next(null);
   }
 }
