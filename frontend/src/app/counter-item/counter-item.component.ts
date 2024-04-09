@@ -1,7 +1,7 @@
 import { HttpClientModule } from '@angular/common/http';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CounterApiService } from '../counter-api.service';
-import { BehaviorSubject, filter, firstValueFrom, map, switchMap } from 'rxjs';
+import { BehaviorSubject, filter, firstValueFrom, map, switchMap, timer, combineLatest, debounceTime } from 'rxjs';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -16,6 +16,7 @@ export class CounterItemComponent {
     private readonly api: CounterApiService,
   ) { }
 
+  private timer$ = timer(0, 5000); // Trigger every 5 seconds
   private reload$ = new BehaviorSubject(null);
 
   // Convert the input value from a string to a BehaviorSubject
@@ -25,7 +26,7 @@ export class CounterItemComponent {
 
   @Output() deleted = new EventEmitter<void>();
 
-  value$ = this.reload$.pipe(
+  value$ = combineLatest([this.reload$, this.timer$]).pipe(
     switchMap(()=>this._counter),     // Get the counter name
     filter(x=> x !== undefined),      // Don't emit unless name is set
     switchMap(x => this.api.get(x!)), // Then get value from API
